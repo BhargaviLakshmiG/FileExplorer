@@ -15,7 +15,7 @@ let dir = process.cwd();
 
 app.get('/', (req, res) => {
     console.log("File explorer")
-    res.redirect('./public/index.html')
+    res.redirect("/index.html")
 })
 
 
