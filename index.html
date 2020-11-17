@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Explorer Page with NODE</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+</head>
+
+<body>
+    <div class="container">
+        <h2 style="text-align: center;">FILE SYSTEM</h2>
+        <div class="card">
+            <div class="d-flex card-body bg-dark text-light justify-content-between">
+                <div>
+                    <h6>GO ONE LEVEL UP  <span class="fas fa-arrow-alt-circle-up" onclick='filesList("..")'></span></h6>
+                </div>
+                
+            </div>
+        </div>
+        <div>
+            <table class="table" id="listTable">
+            </table>
+        </div>
+    </div>
+    <script>
+
+async function filesList(path) {
+    console.log("Path is "+path);
+    let list_files;
+    let table = document.getElementById('listTable');
+    let tbody = document.createElement('tbody');
+    let currdir;
+    table.innerHTML = '';
+    try {
+        if (path == "..") {
+            list_files = await fetch('http://localhost:4000/back');
+            console.log('Going back..');
+        } else {
+            list_files = await fetch('http://localhost:4000/files/' + path)
+            console.log('path = ' + path);
+        }
+        let files = await list_files.json();
+        console.log(files)
+        if (files) {
+            files.forEach((file, ind) => {
+                if (ind === 0) currdir = file.directory;
+
+                console.log("Current directory: " + currdir);
+                let tr = document.createElement('tr');
+                let td = document.createElement('td');
+                if (file.type == 'Directory') {
+                    td.innerHTML = `<i class = 'far fa-folder' onclick ="filesList('${file.name}')" style="color:green"> ${file.name}</i>`;
+                } else if (file.type = 'File') {
+                    td.innerHTML = `<i class = 'far fa-file'> ${file.name}</i>`;
+                }
+                tr.append(td);
+                tbody.append(tr);
+                table.append(tbody);
+            })
+        } else {
+            console.log("Error reading the files");
+        }
+    } catch (error) {
+        console.log('Error :' + error);
+    }
+}
+
+filesList('');
+
+async function addFile() {
+    let raw = await fetch('http://localhost:4000/addfile');
+    let files = await raw.json();
+    filesList('');
+}
+
+
+
+    </script>
+</body>
+
+</html>
