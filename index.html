@@ -69,11 +69,6 @@ async function filesList(path) {
 
 filesList('');
 
-async function addFile() {
-    let raw = await fetch('http://localhost:4000/addfile');
-    let files = await raw.json();
-    filesList('');
-}
 
 
 
